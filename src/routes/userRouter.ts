@@ -60,7 +60,7 @@ userRouter.post("/signin", (req, res) => {
     );
 
     if (!user)
-      return res.status(401).json({ message: "Inavlid username or password " });
+      return res.status(401).json({ message: "Invalid username or password" });
 
     if (!process.env.JWT_SECRET)
       return res.status(411).json({ message: "Can't authenticate" });
