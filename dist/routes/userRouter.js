@@ -40,12 +40,12 @@ userRouter.post("/signup", (req, res) => {
             return res.status(411).json({ message: result.error });
         const existingUser = users.find((user) => user.email === result.data.email);
         if (existingUser)
-            res.status(409).json({ message: "User already exists" });
+            return res.status(409).json({ message: "User already exists" });
         users.push(result.data);
         if (!process.env.JWT_SECRET)
             return res.status(411).json({ message: "Can't authenticate" });
         const token = jsonwebtoken_1.default.sign({ email: result.data.email }, process.env.JWT_SECRET);
-        res.status(201).json({ message: "User created", jwt: token });
+        return res.status(201).json({ message: "User created", jwt: token });
     }
     catch (error) {
         return res.status(411).json({ message: error });
@@ -60,14 +60,14 @@ userRouter.post("/signin", (req, res) => {
         const user = users.find((user) => user.username === result.data.username &&
             user.password === result.data.password);
         if (!user)
-            return res.status(401).json({ message: "Inavlid username or password " });
+            return res.status(401).json({ message: "Invalid username or password" });
         if (!process.env.JWT_SECRET)
             return res.status(411).json({ message: "Can't authenticate" });
         const token = jsonwebtoken_1.default.sign({ email: user.email }, process.env.JWT_SECRET);
-        res.json({ message: "User logged in", jwt: token });
+        return res.json({ message: "User logged in", jwt: token });
     }
     catch (error) {
-        res.status(411).json({ message: error });
+        return res.status(411).json({ message: error });
     }
 });
 userRouter.post("/forgot-password", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
