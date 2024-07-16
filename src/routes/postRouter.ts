@@ -19,7 +19,7 @@ interface Post {
   content: string;
   author: string;
   createdAt: string;
-  likes: User["id"][];
+  likes: User["username"][];
   comments: Comment[];
 }
 
