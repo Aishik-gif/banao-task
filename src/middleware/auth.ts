@@ -17,7 +17,7 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
     if (!decoded) return res.status(403).json({ message: "Unauthorized" });
 
-    const user = users.find(user => user.id === decoded.id);
+    const user = users.find((user) => user.id === decoded.id);
     if (!user) return res.status(401).json({ message: "User not found" });
     res.locals.user = user;
   } catch (err) {

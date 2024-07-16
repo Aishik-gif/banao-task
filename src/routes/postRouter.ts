@@ -2,7 +2,7 @@ import express from "express";
 import { z } from "zod";
 import authMiddleware from "../middleware/auth";
 import { User } from "./userRouter";
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 const postRouter = express.Router();
 
@@ -23,6 +23,7 @@ interface Post {
   comments: Comment[];
 }
 
+//can be connected to a database using prisma/mongoose/other orm
 const posts: Post[] = [];
 
 postRouter.use("*", authMiddleware);
@@ -45,17 +46,18 @@ postRouter.post("/", authMiddleware, (req, res) => {
     likes: [],
     comments: [],
   };
-  posts.push(newPost);
+  posts.push(newPost); //create operation on prisma
   return res.status(201).json({ message: "Post created", post: newPost });
 });
 
 postRouter.get("/", authMiddleware, (req, res) => {
+  //fetch all posts from database
   return res.json({ message: "All posts", posts });
 });
 
 postRouter.get("/:id", authMiddleware, (req, res) => {
   const postId = req.params.id;
-  const post = posts.find((post) => post.id === postId);
+  const post = posts.find((post) => post.id === postId); //fetch and find from database
   if (!post)
     return res
       .status(404)
@@ -77,7 +79,7 @@ postRouter.put("/:id", authMiddleware, (req, res) => {
   const body = req.body;
   const result = updatePostInput.safeParse(body);
   if (!result.success) return res.status(400).json({ message: result.error });
-  const post = posts.find((post) => post.id === postId);
+  const post = posts.find((post) => post.id === postId); //fetch and find
   if (!post)
     return res
       .status(404)
@@ -89,18 +91,18 @@ postRouter.put("/:id", authMiddleware, (req, res) => {
 
 postRouter.delete("/:id", authMiddleware, (req, res) => {
   const postId = req.params.id;
-  const index = posts.findIndex((post) => post.id === postId);
+  const index = posts.findIndex((post) => post.id === postId); //fetch and find
   if (index === -1)
     return res
       .status(404)
       .json({ message: `No post found with the id ${postId}` });
-  posts.splice(index, 1);
+  posts.splice(index, 1); //delete operation in prisma
   return res.json({ message: "Post deleted successfully" });
 });
 
 postRouter.post("/:id/like", authMiddleware, (req, res) => {
   const postId = req.params.id;
-  const post = posts.find((post) => post.id === postId);
+  const post = posts.find((post) => post.id === postId); //fetch and find
   if (!post)
     return res
       .status(404)
@@ -125,7 +127,7 @@ postRouter.post("/:id/comment", authMiddleware, (req, res) => {
   const postId = req.params.id;
   const body = req.body;
   const result = addCommentInput.safeParse(body);
-  if(!result.success) return res.status(400).json({ message: result.error });
+  if (!result.success) return res.status(400).json({ message: result.error });
   const post = posts.find((post) => post.id === postId);
   if (!post)
     return res
@@ -136,9 +138,12 @@ postRouter.post("/:id/comment", authMiddleware, (req, res) => {
     content: result.data.content,
     username: res.locals.user.username,
     createdAt: new Date().toISOString(),
-  }
+  };
   post.comments.push(newComment);
-  return res.json({message: "Comment created successfully", comments: post.comments})
+  return res.json({
+    message: "Comment created successfully",
+    comments: post.comments,
+  });
 });
 
 postRouter.get("/:id/comments", authMiddleware, (req, res) => {
@@ -148,7 +153,7 @@ postRouter.get("/:id/comments", authMiddleware, (req, res) => {
     return res
       .status(404)
       .json({ message: `No post found with the id ${postId}` });
-  return res.json({message: "Post found", comments: post.comments})
+  return res.json({ message: "Post found", comments: post.comments });
 });
 
 postRouter.delete("/:id/comment/:commentId", authMiddleware, (req, res) => {
@@ -167,7 +172,7 @@ postRouter.delete("/:id/comment/:commentId", authMiddleware, (req, res) => {
       .status(404)
       .json({ message: `No comment found with the id ${commentId}` });
   post.comments.splice(commentIndex, 1);
-  return res.json({message: "Comment deleted"})
+  return res.json({ message: "Comment deleted" });
 });
 
 export default postRouter;
