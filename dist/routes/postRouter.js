@@ -8,6 +8,7 @@ const zod_1 = require("zod");
 const auth_1 = __importDefault(require("../middleware/auth"));
 const uuid_1 = require("uuid");
 const postRouter = express_1.default.Router();
+//can be connected to a database using prisma/mongoose/other orm
 const posts = [];
 postRouter.use("*", auth_1.default);
 const newPostInput = zod_1.z.object({
@@ -29,15 +30,16 @@ postRouter.post("/", auth_1.default, (req, res) => {
         likes: [],
         comments: [],
     };
-    posts.push(newPost);
+    posts.push(newPost); //create operation on prisma
     return res.status(201).json({ message: "Post created", post: newPost });
 });
 postRouter.get("/", auth_1.default, (req, res) => {
+    //fetch all posts from database
     return res.json({ message: "All posts", posts });
 });
 postRouter.get("/:id", auth_1.default, (req, res) => {
     const postId = req.params.id;
-    const post = posts.find((post) => post.id === postId);
+    const post = posts.find((post) => post.id === postId); //fetch and find from database
     if (!post)
         return res
             .status(404)
@@ -58,7 +60,7 @@ postRouter.put("/:id", auth_1.default, (req, res) => {
     const result = updatePostInput.safeParse(body);
     if (!result.success)
         return res.status(400).json({ message: result.error });
-    const post = posts.find((post) => post.id === postId);
+    const post = posts.find((post) => post.id === postId); //fetch and find
     if (!post)
         return res
             .status(404)
@@ -71,17 +73,17 @@ postRouter.put("/:id", auth_1.default, (req, res) => {
 });
 postRouter.delete("/:id", auth_1.default, (req, res) => {
     const postId = req.params.id;
-    const index = posts.findIndex((post) => post.id === postId);
+    const index = posts.findIndex((post) => post.id === postId); //fetch and find
     if (index === -1)
         return res
             .status(404)
             .json({ message: `No post found with the id ${postId}` });
-    posts.splice(index, 1);
+    posts.splice(index, 1); //delete operation in prisma
     return res.json({ message: "Post deleted successfully" });
 });
 postRouter.post("/:id/like", auth_1.default, (req, res) => {
     const postId = req.params.id;
-    const post = posts.find((post) => post.id === postId);
+    const post = posts.find((post) => post.id === postId); //fetch and find
     if (!post)
         return res
             .status(404)
@@ -117,7 +119,10 @@ postRouter.post("/:id/comment", auth_1.default, (req, res) => {
         createdAt: new Date().toISOString(),
     };
     post.comments.push(newComment);
-    return res.json({ message: "Comment created successfully", comments: post.comments });
+    return res.json({
+        message: "Comment created successfully",
+        comments: post.comments,
+    });
 });
 postRouter.get("/:id/comments", auth_1.default, (req, res) => {
     const postId = req.params.id;

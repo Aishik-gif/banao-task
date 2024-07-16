@@ -21,7 +21,7 @@ const authMiddleware = (req, res, next) => {
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
         if (!decoded)
             return res.status(403).json({ message: "Unauthorized" });
-        const user = userRouter_1.users.find(user => user.id === decoded.id);
+        const user = userRouter_1.users.find((user) => user.id === decoded.id);
         if (!user)
             return res.status(401).json({ message: "User not found" });
         res.locals.user = user;

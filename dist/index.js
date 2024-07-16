@@ -15,8 +15,8 @@ dotenv_1.default.config();
 const PORT = process.env.PORT || 3000;
 const app = (0, express_1.default)();
 app.use(body_parser_1.default.json());
-app.use('/api/v1/user', userRouter_1.default);
-app.use('/api/v1/post', postRouter_1.default);
+app.use("/api/v1/user", userRouter_1.default);
+app.use("/api/v1/post", postRouter_1.default);
 exports.transporter = nodemailer_1.default.createTransport({
     service: "gmail",
     port: 465,

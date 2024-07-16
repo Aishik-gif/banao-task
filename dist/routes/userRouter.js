@@ -27,12 +27,13 @@ const signupInput = zod_1.z.object({
     password: zod_1.z.string().min(6),
 });
 const userSchema = signupInput.extend({
-    id: zod_1.z.string()
+    id: zod_1.z.string(),
 });
 const signinInput = zod_1.z.object({
     username: zod_1.z.string().min(4),
     password: zod_1.z.string().min(6),
 });
+//replace with a database
 exports.users = [];
 userRouter.post("/signup", (req, res) => {
     try {
@@ -40,7 +41,8 @@ userRouter.post("/signup", (req, res) => {
         const result = signupInput.safeParse(body);
         if (!result.success)
             return res.status(400).json({ message: result.error });
-        const existingUser = exports.users.find((user) => user.email === result.data.email || user.username === result.data.username);
+        const existingUser = exports.users.find((user) => user.email === result.data.email ||
+            user.username === result.data.username);
         if (existingUser)
             return res.status(409).json({ message: "User already exists" });
         const newUser = Object.assign({ id: (0, uuid_1.v4)() }, result.data);
@@ -93,7 +95,7 @@ userRouter.post("/forgot-password", (req, res) => __awaiter(void 0, void 0, void
             return res.status(500).json({ message: "error sending email" });
         const mailOptions = {
             from: {
-                name: 'Aishik Dutta',
+                name: "Aishik Dutta",
                 address: process.env.EMAIL,
             },
             to: `${user.email}`,
@@ -103,11 +105,13 @@ userRouter.post("/forgot-password", (req, res) => __awaiter(void 0, void 0, void
       <h3>username: ${user.username}</h3>
       <h4>password: ${user.password}</h4>
       <p>If you didn't make this request please contact our support!</p>
-      `
+      `,
         };
         __1.transporter.sendMail(mailOptions, (error, info) => {
             if (error)
-                return res.status(500).json({ message: "Internal server error", error });
+                return res
+                    .status(500)
+                    .json({ message: "Internal server error", error });
             return res.json({ message: "Mail sent", response: info.response });
         });
     }
